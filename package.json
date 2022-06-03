@@ -1,0 +1,31 @@
+{
+  "name": "dew-backend",
+  "version": "1.0.0",
+  "description": "Backend for Dew Weather",
+  "main": "index.js",
+  "scripts": {
+    "test": "cross-env NODE_ENV=test echo \"Error: no test specified\" && exit 1",
+    "start": "cross-env NODE_ENV=PRODUCTION node index.js",
+    "dev": "cross-env NODE_ENV=development nodemon index.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^0.27.2",
+    "bcrypt": "^5.0.1",
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.1",
+    "express": "^4.18.1",
+    "express-async-errors": "^3.1.1",
+    "jsonwebtoken": "^8.5.1",
+    "lodash": "^4.17.21",
+    "mongoose": "^6.3.5"
+  },
+  "devDependencies": {
+    "cross-env": "^7.0.3",
+    "eslint": "^8.16.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-plugin-import": "^2.26.0",
+    "nodemon": "^2.0.16"
+  }
+}
