@@ -5,6 +5,7 @@ const mongoose = require('mongoose');
 const config = require('./utils/config');
 const logger = require('./utils/logger');
 const middleware = require('./utils/middleware');
+const homeRouter = require('./controllers/home');
 const loginRouter = require('./controllers/login');
 const userRouter = require('./controllers/users');
 const weatherRouter = require('./controllers/weather');
@@ -22,6 +23,7 @@ app.use(express.static('build'));
 app.use(express.json());
 app.use('/api/weather', middleware.tokenExtractor);
 
+app.use('/api/home', homeRouter);
 app.use('/api/weather', weatherRouter);
 app.use('/api/users', userRouter);
 app.use('/api/login', loginRouter);

@@ -5,23 +5,25 @@ const { userExtractor } = require('../utils/middleware');
 const { getCurrentWeather } = require('./weatherapi');
 
 weatherRouter.post('/', userExtractor, async (request, response) => {
-  const {
-    city, lat, lon,
-  } = request.body;
-  const duplicate = _.find(request.user.location, { lat, lon });
+  const { city } = request.body;
+  let { lat, lon } = request.body;
+  lat = `${lat}`;
+  lon = `${lon}`;
+  const duplicate = _.find(request.user.locations, { lat, lon });
 
+  // responds with an error if location is already added
   if (duplicate) {
-    response.status(400).json({
-      error: 'location already added',
-    });
+    return (
+      response.status(400).json({
+        error: 'location already added',
+      })
+    );
   }
 
-  const weather = await getCurrentWeather(lat, lon);
-  console.log(weather);
+  const weather = await getCurrentWeather(city, lat, lon);
   const newLocations = { locations: request.user.locations.concat({ city, lat, lon }) };
-  console.log(newLocations);
   await User.findByIdAndUpdate(request.user.id, newLocations);
-  response.status(201).send(weather);
+  return response.status(201).send(weather);
 });
 
 weatherRouter.get('/', userExtractor, async (request, response) => {
@@ -29,28 +31,23 @@ weatherRouter.get('/', userExtractor, async (request, response) => {
   const weatherPromises = [];
   for (let i = 0; i < locations.length; i += 1) {
     // array of promises
-    console.log(locations[i].lat);
-    weatherPromises.push(getCurrentWeather(locations[i].lat, locations[i].lon));
+    weatherPromises.push(getCurrentWeather(locations[i].city, locations[i].lat, locations[i].lon));
   }
   const weather = await Promise.all(weatherPromises);
-  console.log(weather);
-  // resolves promises and sends weawther data
+  // resolves promises and sends weather data
   response.status(200).send(weather);
 });
 
-// weatherRouter.delete('/:lat%lon', userExtractor, async (request, response) => {
-//   const { city, country } = request.body;
-//   for (let i = 0; i < request.user.location; i += 1) {
-//     if (_.isEqual(request.user.location[i], { city, country })) {
-//       response.status(400).json({
-//         error: 'location already added',
-//       });
-//     }
-//   }
+weatherRouter.delete('/', userExtractor, async (request, response) => {
+  let { lat, lon } = request.body;
+  console.log(lat, lon);
+  lat = `${lat}`;
+  lon = `${lon}`;
+  console.log(typeof lat);
+  const newLocations = { locations: _.reject(request.user.locations, { lat, lon }) };
 
-//   const user = { ...request.user, location: request.user.location.concat({ city, country }) };
-//   await User.findByIdAndUpdate(request.user.id, user);
-//   response.status(201);
-// });
+  await User.findByIdAndUpdate(request.user.id, newLocations);
+  response.status(200).send(newLocations);
+});
 
 module.exports = weatherRouter;

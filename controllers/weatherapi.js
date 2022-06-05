@@ -15,7 +15,7 @@ const getLocation = async (city, country) => {
 
   try {
     const response = await axios.get(`http://api.openweathermap.org/geo/1.0/direct?q=${city}${code}&appid=${OPEN_WEATHER_KEY}`);
-    console.log(response.data);
+    console.log('weather');
     return response.data[0];
   } catch (e) {
     console.log(e);
@@ -24,12 +24,28 @@ const getLocation = async (city, country) => {
   return undefined;
 };
 
-const getCurrentWeather = async (lat, lon) => {
+// gets current weather data
+const getCurrentWeather = async (city, lat, lon) => {
   if (!(lat && lon)) {
     return undefined;
   }
   const response = await axios.get(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${OPEN_WEATHER_KEY}`);
+  response.data.name = city;
+  response.data.coord.lat = lat;
+  response.data.coord.lon = lon;
   return response.data;
 };
 
-module.exports = { getLocation, getCurrentWeather };
+// gets current, minutely, hourly, 5 day forecast, and alerts
+const getAllWeather = async (city, lat, lon) => {
+  if (!(lat && lon)) {
+    return undefined;
+  }
+  const response = await axios.get(`https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lon}&appid=${OPEN_WEATHER_KEY}`);
+  response.data.name = city;
+  response.data.lat = lat;
+  response.data.lon = lon;
+  return response.data;
+};
+
+module.exports = { getLocation, getCurrentWeather, getAllWeather };
